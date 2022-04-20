@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        img {
+            height: 200px;
+            width: 200px;
+            border: 1px black solid;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Image test</h1><br><br>
+    <img id="myimg"><br>
+    <input type="hidden" id="namebox">
+    <input type="hidden" id="extlab">
+    <!--<label id="extlab"></label>-->
+    <button id="selbtn" class="sel1">Select Image</button><br>
+
+    <!-- <input type="file" id="photo" /><br> -->
+    <input type="text" name="scienName" id="scienName" placeholder="ชื่อทางวิทยาศาสตร์"><br>
+    <input type="text" name="comName" id="comName" placeholder="ชื่อสามัญ"><br>
+    <input type="text" name="otherName" id="otherName" placeholder="ชื่ออื่่นๆ"><br>
+    <input type="text" name="species" id="species" placeholder="วงศ์"><br>
+    <textarea name="descriptiion" id="descriptiion" cols="30" rows="10"
+        placeholder="รายละเอียดของต้นกระบองเพชร"></textarea><br>
+
+
+
+    <img id="myimg2"><br>
+
+    <button id="selbtn2" class="sel2">Select Image</button><br>
+    <button id="upbtn">Upload Image</button>
+    <!--<button id="downbtn">Retrieve Image</button>-->
+
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBl5DPP6I-M3TWXlOutY7adRCiu3RfsIkw",
+            authDomain: "project-cactus-abab4.firebaseapp.com",
+            projectId: "project-cactus-abab4",
+            storageBucket: "project-cactus-abab4.appspot.com",
+            messagingSenderId: "544545408756",
+            appId: "1:544545408756:web:cb1e5804b61000cb1fc0a1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+
+
+        import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL }
+            from "https://www.gstatic.com/firebasejs/9.6.8/firebase-storage.js"
+
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc }
+            from "https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore.js"
+        const clouddb = getFirestore();
+
+        var files = [];
+        var file = [];
+        var name = [];
+        var urlArray = [];
+        var reader = new FileReader();
+
+
+        var namebox = document.getElementById('namebox');
+        var extlab = document.getElementById('extlab');
+        var myimg = document.getElementById('myimg');
+        //var proglab = document.getElementById('upprogress');
+        var SelBtn = document.getElementById('selbtn');
+        var UpBtn = document.getElementById('upbtn');
+
+        var myimg2 = document.getElementById('myimg2');
+        var SelBtn2 = document.getElementById('selbtn2');
+        var input = document.getElementsByClassName('sel1');
+        var input2 = document.getElementsByClassName('sel2');
+
+        //---------------------------------------------------------------------------------
+        var input = document.createElement('input');
+        input.type = 'file';
+
+        input2 = document.createElement('input');
+        input2.type = 'file';
+
+        input.onchange = e => {
+            files = e.target.files;
+            file.push(files[0])
+            console.log('input-1');
+            var extname = GetFileExt(file[0]);
+            name.push(GetFileName(file[0]));
+
+
+            namebox.value = name[0];
+            extlab.value = extname;
+            //     // extlab.innerHTML = extention;
+
+            reader.readAsDataURL(files[0]);
+
+
+            reader.onload = function () {
+                console.log('reader1');
+                myimg.src = reader.result;
+            }
+        }
+
+
+        input2.onchange = e => {
+            files = e.target.files;
+            file.push(files[0])
+            //console.log('**********************',file[1]);
+            console.log('input-2');
+            var extention = GetFileExt(file[1]);
+            //name = GetFileName(file[1]);
+            name.push(GetFileName(file[1]));
+            console.log('888888888888', name[0], name[1])
+
+            namebox.value = name[1];
+            extlab.innerHTML = extention;
+
+            reader.readAsDataURL(files[0]);
+
+            reader.onload = function () {
+                console.log('reader2')
+                myimg2.src = reader.result;
+
+            }
+        }
+
+
+
+
+        //-------------------------------------------select------------------------------------------//
+        SelBtn.onclick = function () {
+            input.click();
+            console.log('select1')
+        }
+
+        SelBtn2.onclick = function () {
+            input2.click();
+            console.log('select2')
+        }
+
+        function GetFileExt(file) {
+            var temp = file.name.split('.');
+            var ext = temp.slice((temp.length - 1), (temp.length));
+            return '.' + ext[0];
+            console.log('file');
+        }
+
+        function GetFileName(file) {
+            var temp = file.name.split('.');
+            var fname = temp.slice(0, -1).join('.');
+            return fname;
+        }
+
+        //****************************************************************************************
+        // selbtnDesk.onclick = function () {
+        //     input.click();
+        // }
+
+        // function GetFileExt(file) {
+        //     var temp = file.name.split('.');
+        //     var ext = temp.slice((temp.length - 1), (temp.length));
+        //     return '.' + ext[0];
+        // }
+
+        // function GetFileName(file) {
+        //     var temp = file.name.split('.');
+        //     var fname = temp.slice(0, -1).join('.');
+        //     return fname;
+        // }
+        //--------------------------------------------upload---------------------------------------//
+
+        function UploadProcess() {
+            var r_name;
+            for (let i = 0; i < name.length; i++) {
+                var ImgToUpload = file[i];
+                //var ImgToUpload = files[0];
+                console.log(file.length);
+                console.log('กดปุ่ม upload');
+                // var ImgName = namebox.value + extlab.innerHTML;
+                const metaData = {
+                    contentType: ImgToUpload.type
+                }
+
+                // console.log('ImgToUpload ', ImgToUpload);
+                // console.log('ImgToUpload.type ', ImgToUpload.type);
+                // console.log('metaData ', metaData);
+
+                const storage = getStorage();
+                // console.log('storage ', storage);
+                const result = Math.random().toString(36).substring(2);
+                r_name = result;
+                const storageRef = sRef(storage, "Images/" + result + extlab.value);
+                // console.log('storageRef ', storageRef);
+                const UploadTask = uploadBytesResumable(storageRef, ImgToUpload, metaData);
+                // console.log('UploadTask ', UploadTask);
+
+                UploadTask.on('state-changed', (snapshot) => {
+                    console.log('upload on task');
+                    // var progess = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    // proglab.innerHTML = "Upload " + progess + "%";
+                },
+                    (error) => {
+                        alert("error: image not Uploaded!");
+                    },
+                    () => {
+                        getDownloadURL(UploadTask.snapshot.ref).then((downloadURL) => {
+                            // console.log('getdownload');
+                            // console.log('UploadTask.snapshot.ref', UploadTask.snapshot.ref);
+                            //console.log('downloadURL is', downloadURL);
+                            urlArray.push(downloadURL);
+                            SaveURLtoFirestore(urlArray);
+                        });
+                    }
+                );
+            }
+            // console.log('url**************** is', r_name);
+           // console.log('////////', urlArray);
+          
+
+        }
+
+        //-----------function for firestore------------------//
+
+        async function SaveURLtoFirestore(url) {
+            var scienName = document.getElementById('scienName').value;
+            var comName = document.getElementById('comName').value;
+            var otherName = document.getElementById('otherName').value;
+            var species = document.getElementById('species').value;
+            var descriptiion = document.getElementById('descriptiion').value;
+          
+            // var name = namebox.value;
+            // var ext = extlab.innerHTML;
+            console.log('!!!!!!!!!!!!!!!!!!!!',url );
+
+            var ref = doc(clouddb, "cactus/" + scienName);
+            await setDoc(ref, {
+                // ImageName: (name + ext),
+                ImageURL: url[0],
+                ImagedescURL: url[1],
+                scienName: scienName,
+                comName: comName,
+                otherName: otherName,
+                species: species,
+                descriptiion: descriptiion
+            })
+            alert('เพิ่มข้อมูลสำเร็จ');
+        }
+
+
+        // async function GetImagefromFirestore() {
+        //     var name = namebox.value;
+
+        //     var ref = doc(clouddb, "cactus/" + name);
+
+        //     const docSnap = await getDoc(ref);
+
+        //     if (docSnap.exists()) {
+        //         myimg.src = docSnap.data().ImageURL;
+        //     }
+        // }
+
+        UpBtn.onclick = UploadProcess;
+
+        //UpBtn.onclick = test;
+        //DownBtn.onclick = GetImagefromFirestore;
+
+    </script>
+</body>
+
+</html>

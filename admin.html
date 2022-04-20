@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* .imagesDivStyle{
+        width: 6oopx;
+        border: 1px gray solid;
+        padding: 5px;
+    } */
+
+        .imgs {
+            height: 80px;
+            width: 100px;
+            border: 1px black dashed;
+            margin: 5px;
+        }
+
+        label {
+            display: inline-block;
+            width: 120px;
+        }
+
+        input,
+        textarea,
+        breedarea {
+            width: 600px;
+            border: gray 1px solid;
+            resize: none;
+            padding: 8px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        #cacdesc {
+            height: 100px;
+            vertical-align: top;
+        }
+
+        #breeddesc {
+            height: 100px;
+            vertical-align: top;
+        }
+
+        /* #addcacbtn, #selimgsbtn{
+        float: right;
+        margin: 10px;
+    } */
+        #controldiv {
+            width: 740px;
+        }
+
+        #loadlab {
+            width: 200px;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <label>ชื่อทางวิทยาศาสตร์</label><input type="text" id="scienName"><br><br>
+    <label>ชื่อสามัญ</label><input type="text" id="comName"><br><br>
+    <label>ชื่ออื่น</label><input type="text" id="otherName"><br><br>
+    <label>วงศ์</label><input type="text" id="famName"><br><br>
+    <!-- <label>สายพันธุ์</label>
+    <select id="spcinp">
+        <option value="Mammillaria">Mammillaria</option>
+        <option value="Gymnocalycium">Gymnocalycium</option>
+    </select><br><br> -->
+    <!-- <label>Points #1</label> <input type="text" id="p1inp"><br><br>
+    <label>Points #2</label> <input type="text" id="p2inp"><br><br>
+    <label>Points #3</label> <input type="text" id="p3inp"><br><br>
+    <label>Points #4</label> <input type="text" id="p4inp"><br><br> -->
+    <label id="cacdesc">Cactus Description</label><textarea id="desarea"></textarea> <br><br>
+    <div id="imagesDiv"></div>
+    <button id="selimgsbtn">Select Images</button><br><br>
+<!-- 
+    <label id="breeddesc">Cactus breed</label><textarea id="breedarea"></textarea> <br><br>
+    <div id="imgbreedDiv"></div>
+    <button id="selimgsdescbtn">Select Images</button><br><br> -->
+
+    <button id="addcacbtn">Add Product</button>
+
+    <script type="module">
+        //------------------------refference-------------------------//
+        var Files = [];
+        var FileReaders = [];
+        // var Files2 = [];
+        // var FileReaders2 = [];
+        var ImagelinksArray = [];
+
+        const imgdiv = document.getElementById('imagesDiv');
+        const selBtn = document.getElementById('selimgsbtn');
+        // const imgdiv2 = document.getElementById('imgbreedDiv');
+        // const selBtn2 = document.getElementById('selimgsdescbtn');
+        const addBtn = document.getElementById('addcacbtn');
+
+
+
+        const scienName = document.getElementById('nameinp');
+        const comName = document.getElementById('comName');
+        const otherName = document.getElementById('otheName');
+        const famName = document.getElementById('famName');
+        const species = document.getElementById('spcinp');
+        const description = document.getElementById('desarea');
+
+        // const p1 = document.getElementById('plinp');
+        // const p2 = document.getElementById('p2inp');
+        // const p3 = document.getElementById('p3inp');
+        // const p4 = document.getElementById('p4inp');
+
+
+
+        function OpenFileDialog() {
+            let inp = document.createElement('input');
+            inp.type = 'file';
+            inp.multiple = 'multiple';
+            document.createElement('input');
+            inp.onchange = (e) => {
+                AssignImgsToFilesArray(e.target.files);
+                CreateImgTags();
+            }
+
+            inp.click();
+        }
+
+
+
+        function AssignImgsToFilesArray(thefiles) {
+            let num = Files.length + thefiles.length;
+            let looplim = (num <= 3) ? thefiles.length : (3 - Files.length);
+
+            for (let i = 0; i < looplim; i++) {
+                Files.push(thefiles[i]);
+
+            }
+            if (num > 3) alert("ไฟล์เยอะเกินไป");
+        }
+
+        function CreateImgTags() {
+            imgdiv.innerHTML = '';
+            // imgdiv.classList.add('imagesDivStyle');
+
+            for (let i = 0; i < Files.length; i++) {
+                FileReaders[i] = new FileReader();
+
+                FileReaders[i].onload = function () {
+                    var img = document.createElement('img');
+                    // img.id = 'imgNo'+ i;
+                    img.classList.add('imgs');
+                    img.src = FileReaders[i].result;
+                    imgdiv.append(img);
+
+                }
+
+                FileReaders[i].readAsDataURL(Files[i]);
+            }
+
+            // let lab = document.getElementById('label');
+            // lab.innerHTML = 'clear images';
+            // lab.style = 'cursor:pointer:display:block;color:navy;font-size:12px';
+            // lab.addEventListener('click', clearImages);
+            // imgdiv.append(lab);
+
+        }
+
+        // function clearImages() {
+        //     Files = [];
+        //     ImageLinksArray = [];
+        //     imgdiv.innerHTML = '';
+        // }
+
+        //-----------------------------------2---------------------------//
+
+        // function OpenFileDialog2() {
+        //     let inp = document.createElement('input');
+        //     inp.type = 'file';
+        //     inp.multiple = 'multiple';
+        //     console.log('************');
+        //     document.createElement('input');
+        //     inp.onchange = (e) => {
+        //         AssignImgsToFilesArray2(e.target.files);
+        //         CreateImgTags2();
+        //     }
+
+        //     inp.click();
+        // }
+
+        // function AssignImgsToFilesArray2(thefiles) {
+        //     let num = Files2.length + thefiles.length;
+        //     let looplim = (num <= 3) ? thefiles.length : (3 - Files2.length);
+
+        //     for (let i = 0; i < looplim; i++) {
+        //         Files2.push(thefiles[i]);
+
+        //     }
+        //     if (num > 3) alert("ไฟล์เยอะเกินไป");
+        // }
+
+        // function CreateImgTags2() {
+        //     imgdiv2.innerHTML = '';
+        //     // imgdiv.classList.add('imagesDivStyle');
+
+        //     for (let i = 0; i < Files2.length; i++) {
+        //         FileReaders2[i] = new FileReader();
+
+        //         FileReaders2[i].onload = function () {
+        //             var img2 = document.createElement('img');
+        //             // img.id = 'imgNo'+ i;
+        //             img2.classList.add('imgs');
+        //             img2.src = FileReaders2[i].result;
+        //             imgdiv2.append(img2);
+
+        //         }
+
+        //         FileReaders2[i].readAsDataURL(Files2[i]);
+        //     }
+        // }
+
+        // function getShortTitle() {
+        //     let namey = scienName.value.substring(0, 50);
+        //     return namey.replace(/[^a-zA-Z0-9]/g, "");
+        // }
+
+        function GetImgUploadProgress() {
+            return 'Images Uploaded' + ImageLinksArray.length + 'of' + Files.length
+        }
+
+        function IsAllImagesUploaded() {
+            return ImageLinksArray.length == Files.length;
+        }
+
+        function RestoreBack() {
+            selBtn.disabled = false;
+            // selBtn2.disabled = false;
+            addBtn.disabled = false;
+        }
+        //---------------------------EVENT--------------------------------------//
+
+        selBtn.addEventListener('click', OpenFileDialog);
+        // selBtn2.addEventListener('click', OpenFileDialog2);
+        addBtn.addEventListener('click', UploadAllImages);
+
+        //-----------------upload image to storage---------------------------------//
+
+        function UploadAllImages() {
+            selBtn.disabled = true;
+            // selBtn2.disabled = true;
+            addBtn.disabled = true;
+
+            // ImageLinksArray = [];
+
+            for (let i = 0; i < Files.length; i++) {
+                UploadAnImage(Files[i], i);
+            }
+        }
+
+        function UploadAnImage(imgToUpload) {
+            const metadata = {
+                contentType: imgToUpload.type
+            };
+
+            const storage = getStorage();
+            const ImageAddress = "Images-WebApp/" + scienName + "/img#";
+            const storageRef = sRef(storage, ImageAddress);
+
+            const UploadTask = uploadBytesResumable(storageRef, imgToUpload, metadata);
+            UploadTask.on('state_changed', (snapshot) => {
+                proglab.innerHTML = GetImgUploadProgress();
+            },
+
+                (error) => {
+                    alert("error: image upload failed");
+                },
+
+                () => {
+                    getDownloadURL(UploadTask.snapshot.ref).then((downloadURL) => {
+                        ImageLinksArray.push(downloadURL);
+                        if (IsAllImagesUploaded()) {
+                            proglab.innerHTML = "all image uploaded";
+                            UploadAProduct();
+                        }
+                    });
+                }
+            );
+        }
+
+        //------------------------config-------------------//
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBl5DPP6I-M3TWXlOutY7adRCiu3RfsIkw",
+            authDomain: "project-cactus-abab4.firebaseapp.com",
+            projectId: "project-cactus-abab4",
+            storageBucket: "project-cactus-abab4.appspot.com",
+            messagingSenderId: "544545408756",
+            appId: "1:544545408756:web:cb1e5804b61000cb1fc0a1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+
+
+        import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL }
+            from "https://www.gstatic.com/firebasejs/9.6.8/firebase-storage.js"
+
+        import { getDatabase, ref, set, child, get }
+            from "https://www.gstatic.com/firebasejs/9.6.8/firebase-database.js"
+        const db = getDatabase();
+
+        //---------------------upload product-------------------------------//
+
+        function UploadAProduct() {
+            set(ref(db, "Cactus-Webapp/" + scienName), {
+                scienName: scienName.value,
+                comName: comName.value,
+                otherName: otherName.value,
+                species: species.value,
+                descImageLinks: ImageLinksArray
+            });
+
+            alert("upload succesfuly");
+            RestoreBack();
+        }
+
+    </script>
+
+</body>
+
+</html>
