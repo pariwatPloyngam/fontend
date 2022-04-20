@@ -116,7 +116,3 @@ async function GetImagefromFirestore() {
 
 UpBtn.onclick = UploadProcess;
 DownBtn.onclick = GetImagefromFirestore;
-
-
-
-// Cmdbdhsdkhfds
